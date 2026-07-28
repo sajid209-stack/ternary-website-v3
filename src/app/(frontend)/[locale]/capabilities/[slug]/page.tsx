@@ -1,7 +1,8 @@
 import Motion from '@/components/animation/motion'
 import CapabilityArt from '@/components/capability/CapabilityArt'
-import { TONE, toneFor, type Tone } from '@/components/layout/GradientPanel'
+import { TONE, toneFor } from '@/components/layout/GradientPanel'
 import Link from '@/components/LocalizedLink'
+import NumberedSteps, { TONE_RGB } from '@/components/NumberedSteps'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
@@ -127,18 +128,6 @@ const revealItem = (index: number) => ({
 // Focus-visible affordance shared across every interactive element (matches the detail routes).
 const FOCUS_RING =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
-
-// Key colors of the brand TONE gradients (GradientPanel) as raw RGB triplets, so decorative washes
-// can borrow the palette at very low alpha without minting any new colors. Cycle order mirrors
-// `toneFor`'s positional fallback, keeping accents consistent across sections.
-const TONE_RGB: Record<Tone, string> = {
-  crimson: '193, 40, 95',
-  violet: '124, 58, 237',
-  emerald: '31, 157, 107',
-  azure: '47, 147, 218',
-  magenta: '182, 36, 154',
-  indigo: '79, 107, 237',
-}
 
 // Palantir-style section marker: "Section 02 / Label", tabular numerals, tight functional label.
 function SectionMarker({ index, label }: { index: number; label: string }): JSX.Element {
@@ -359,57 +348,7 @@ export default async function Page({
           </Motion>
 
           {howItems.length > 0 && (
-            <div className="relative">
-              {/* connector line — desktop only, threaded through the step nodes */}
-              <div
-                aria-hidden
-                className="absolute inset-x-0 top-[7px] hidden h-px bg-gradient-to-r from-line via-line-strong to-line lg:block"
-              />
-              <ol className="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-10">
-                {howItems.map((item, i) => {
-                  const tone = toneFor(null, i)
-                  return (
-                    <Motion
-                      tag="li"
-                      key={item.id ?? `practice-${i}`}
-                      className="group relative flex flex-col gap-6"
-                      {...revealItem(i)}
-                    >
-                      {/* hover tint — a faint tonal field that surfaces the active step */}
-                      <span
-                        aria-hidden
-                        className="pointer-events-none absolute -inset-x-4 -inset-y-5 rounded-md opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                        style={{
-                          backgroundImage: `radial-gradient(85% 75% at 22% 8%, rgba(${TONE_RGB[tone]}, 0.09) 0%, transparent 62%)`,
-                        }}
-                      />
-                      {/* node on the sequence line */}
-                      <span
-                        aria-hidden
-                        className="relative z-10 block size-3.5 rounded-full border border-line-strong bg-page ring-4 ring-page"
-                      >
-                        <span className="absolute inset-[3px] rounded-full bg-cream/70 transition-transform duration-300 group-hover:scale-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
-                      </span>
-                      <div className="relative flex flex-col gap-3">
-                        {/* oversized ghost numeral — decorative; the <ol> carries the real order */}
-                        <span
-                          aria-hidden
-                          className="font-display text-[clamp(3.25rem,5.5vw,4.5rem)] font-medium leading-none tabular-nums tracking-[-0.04em] text-cream/[0.14] transition-colors duration-500 group-hover:text-cream/25"
-                        >
-                          {String(i + 1).padStart(2, '0')}
-                        </span>
-                        {item.title && (
-                          <h3 className="text-[18px] font-medium tracking-[-0.02em] text-cream">{item.title}</h3>
-                        )}
-                        {item.excerpt && (
-                          <p className="max-w-xs text-[15px] leading-relaxed text-body">{item.excerpt}</p>
-                        )}
-                      </div>
-                    </Motion>
-                  )
-                })}
-              </ol>
-            </div>
+            <NumberedSteps steps={howItems.map((item) => ({ title: item.title ?? '', body: item.excerpt ?? '' }))} />
           )}
         </section>
       )}

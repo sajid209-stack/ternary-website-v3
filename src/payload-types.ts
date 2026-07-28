@@ -387,6 +387,16 @@ export interface Story {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Numbered steps (2–4) shown after the write-up. Keep the bodies a similar length so they align.
+   */
+  steps?:
+    | {
+        title?: string | null;
+        body?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   caseMeta?: {
     industry?: string | null;
     engagement?: string | null;
@@ -5525,6 +5535,13 @@ export interface StorySelect<T extends boolean = true> {
     | {
         media?: T;
         caption?: T;
+        id?: T;
+      };
+  steps?:
+    | T
+    | {
+        title?: T;
+        body?: T;
         id?: T;
       };
   caseMeta?:

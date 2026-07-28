@@ -2,6 +2,7 @@ import Motion from '@/components/animation/motion'
 import { EASE, reveal, revealItem } from '@/components/animation/reveal'
 import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
+import NumberedSteps from '@/components/NumberedSteps'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { GradientPanel, type Tone, toneFor } from '@/components/sections/stories/gradient'
 import type { Media, Story } from '@/payload-types'
@@ -132,11 +133,27 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
 
   const hasBody = Boolean(story.content)
 
+  // "How we worked" — authored rows only; a row needs both halves to render a step.
+  const steps = (story.steps ?? []).flatMap((row) =>
+    hasText(row.title) && hasText(row.body) ? [{ title: row.title, body: row.body }] : [],
+  )
+  const showSteps = steps.length >= 2
+
   // Media showcase — populated gallery rows only; falls back to a labeled placeholder grid.
   const galleryItems = (story.gallery ?? []).flatMap((row) => {
     const media = asMedia(row.media ?? null)
     return media ? [{ media, caption: row.caption ?? null }] : []
   })
+
+  // Section numbering, derived rather than hardcoded so a band that doesn't render for this story
+  // never leaves a gap in the "01 / 02 / 03" sequence.
+  const sections = [
+    ...(hasBody ? (['story'] as const) : []),
+    ...(showSteps ? (['steps'] as const) : []),
+    'product' as const,
+    ...(related.length > 0 ? (['related'] as const) : []),
+  ]
+  const sectionNo = (key: (typeof sections)[number]): number => sections.indexOf(key) + 1
 
   return (
     <article className="w-full pb-24 lg:pb-32">
@@ -225,7 +242,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
         <div className="mx-auto w-full max-w-7xl px-5 py-24 md:px-8 lg:px-12 lg:py-32">
           <Motion tag="div" {...reveal} className="grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-16">
             <div className="lg:sticky lg:top-28 lg:self-start">
-              <SectionMarker index={1} label="The story" />
+              <SectionMarker index={sectionNo('story')} label="The story" />
               <p className="mt-4 text-[15px] leading-[1.5] tracking-[-0.01em] text-body">
                 How we approached the work, what we built, and why it matters.
               </p>
@@ -246,10 +263,22 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
         </div>
       )}
 
+      {/* How we worked — the numbered sequence, CMS-driven (story.steps). Sits between the
+          write-up and the product visuals: the reader has just finished the narrative, and this
+          is the "so how did you actually do it" beat before the screens. Hidden when unauthored. */}
+      {showSteps && (
+        <section className="mx-auto w-full max-w-7xl px-5 pb-24 md:px-8 lg:px-12 lg:pb-32">
+          <Motion tag="div" {...reveal} className="mb-10 flex max-w-2xl flex-col gap-5">
+            <SectionMarker index={sectionNo('steps')} label="How we worked" />
+          </Motion>
+          <NumberedSteps steps={steps} />
+        </section>
+      )}
+
       {/* Media showcase — gallery when authored; a clearly-labeled placeholder grid otherwise. */}
       <section className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12">
         <Motion tag="div" {...reveal} className="mb-10 flex max-w-2xl flex-col gap-5">
-          <SectionMarker index={2} label="In the product" />
+          <SectionMarker index={sectionNo('product')} label="In the product" />
           <h2 className="font-display text-[clamp(1.5rem,3vw,1.875rem)] font-medium leading-[1.15] tracking-[-0.03em] text-cream">
             The work, up close.
           </h2>
@@ -274,7 +303,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
         <section className="mx-auto w-full max-w-7xl px-5 pt-24 md:px-8 lg:px-12 lg:pt-32">
           <div className="mb-10 flex items-end justify-between gap-4">
             <div className="flex flex-col gap-5">
-              <SectionMarker index={3} label="More of the work" />
+              <SectionMarker index={sectionNo('related')} label="More of the work" />
               <h2 className="font-display text-[clamp(1.5rem,3vw,1.875rem)] font-medium tracking-[-0.04em] text-cream">
                 Related case studies.
               </h2>
