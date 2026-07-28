@@ -96,7 +96,17 @@ function compare(a: { weight: number; time: number }, b: { weight: number; time:
 async function fetchFeed(locale: TypedLocale): Promise<FeedItem[]> {
   const payload = await getPayload({ config })
   // depth 1 hydrates `thumbnail` and `posterImage`; nothing deeper is rendered on a row.
-  const query = { limit: 500, depth: 1, locale, sort: '-createdAt' } as const
+  //
+  // The `_status` filter is load-bearing: omitting `draft` does NOT exclude drafts. Payload v3
+  // keeps them in the same collection under `_status: 'draft'`, so without this the index lists
+  // unpublished work — flex5 and hissho-sushiops360 were both appearing on /stories.
+  const query = {
+    limit: 500,
+    depth: 1,
+    locale,
+    sort: '-createdAt',
+    where: { _status: { equals: 'published' } },
+  } as const
 
   const [stories, insights, press] = await Promise.all([
     payload.find({ collection: 'story', ...query }),
@@ -127,7 +137,7 @@ async function fetchFeed(locale: TypedLocale): Promise<FeedItem[]> {
 
 /** Tag-busted by the existing story/insight/pressRelease afterChange + afterDelete hooks. */
 function getFeed(locale: TypedLocale): Promise<FeedItem[]> {
-  return unstable_cache(() => fetchFeed(locale), [`stories_feed_${locale}_v1`], {
+  return unstable_cache(() => fetchFeed(locale), [`stories_feed_${locale}_v3`], {
     tags: ['story', 'insight', 'pressRelease'],
   })()
 }

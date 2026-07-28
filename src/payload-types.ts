@@ -397,6 +397,10 @@ export interface Story {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Two lines, one per row. Line 2 renders in the muted italic. No counts or metrics.
+   */
+  workHeadline?: string | null;
   caseMeta?: {
     industry?: string | null;
     engagement?: string | null;
@@ -5608,6 +5612,7 @@ export interface StorySelect<T extends boolean = true> {
         body?: T;
         id?: T;
       };
+  workHeadline?: T;
   caseMeta?:
     | T
     | {

@@ -64,6 +64,22 @@ export const caseStudyFields: Field[] = [
     ],
   },
 
+  // The two-line editorial headline for a story's scene on /work. Line one is set in the primary
+  // text tier, line two in the muted italic beneath it — so the break is authored, not wrapped.
+  // Falls back to the story title when unset, which is why /work needs no separate curation list.
+  //
+  // House rules apply here as everywhere: no counts, no metrics, nothing we cannot source.
+  {
+    name: 'workHeadline',
+    label: 'Work Page Headline',
+    type: 'textarea',
+    localized: true,
+    admin: {
+      description: 'Two lines, one per row. Line 2 renders in the muted italic. No counts or metrics.',
+      rows: 2,
+    },
+  },
+
   // 5-cell meta strip beneath the hero.
   {
     name: 'caseMeta',

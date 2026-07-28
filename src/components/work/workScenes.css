@@ -1,0 +1,325 @@
+:root {
+  --wk-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --wk-gutter: 48px;
+  /* The layout's <main> is offset by the floating header pill, so a 100svh scene would overflow
+     the viewport by exactly that much and push each scene's foot below the fold. Subtracting the
+     same nav tokens the layout uses keeps a scene equal to the space it actually has. */
+  --wk-vh: calc(100svh - (var(--nav-h) + var(--nav-gap) + 12px));
+}
+
+@media (max-width: 768px) {
+  :root {
+    --wk-gutter: 20px;
+  }
+}
+
+/* /work — one case study per viewport, snapped.
+   Ported from the prototype into the project's tokens: --color-page for the ground,
+   --color-cream for primary text, --color-subtle for the muted tier (the prototype's 50%-cream
+   `--fg-muted` is banned for text by tests/int/contrast.int.spec.ts), --color-line for rules. */
+
+.wk-track {
+  height: var(--wk-vh);
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  /* Snapping owns the wheel here, so the page's own scrollbar would be a second, conflicting
+     control. Hidden rather than styled — the rail is the position indicator. */
+  scrollbar-width: none;
+}
+.wk-track::-webkit-scrollbar {
+  width: 0;
+}
+
+.wk-scene {
+  position: relative;
+  height: var(--wk-vh);
+  scroll-snap-align: start;
+  /* A hard flick cannot skip a study; every one gets its moment. */
+  scroll-snap-stop: always;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* ---------- media ---------- */
+
+.wk-media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.wk-fill {
+  position: absolute;
+  inset: -6%;
+  transform: scale(1.06);
+  transition: transform 1.6s var(--wk-ease);
+}
+.wk-scene.is-live .wk-fill {
+  transform: scale(1);
+  animation: wk-drift 22s ease-in-out infinite alternate;
+}
+
+@keyframes wk-drift {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.07) translate3d(-1.5%, -1.5%, 0);
+  }
+}
+
+.wk-fill > img,
+.wk-fill > video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Legibility scrim — heaviest at the foot, where the type sits. */
+.wk-scene::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    color-mix(in oklab, var(--color-page) 92%, transparent) 0%,
+    color-mix(in oklab, var(--color-page) 55%, transparent) 34%,
+    color-mix(in oklab, var(--color-page) 10%, transparent) 68%,
+    color-mix(in oklab, var(--color-page) 35%, transparent) 100%
+  );
+  pointer-events: none;
+}
+
+/* ---------- type ---------- */
+
+.wk-body {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: var(--container-7xl);
+  margin: 0 auto;
+  padding: 0 var(--wk-gutter) clamp(56px, 8vh, 104px);
+}
+
+/* Each headline line rises out of its own clipping box. */
+.wk-mask {
+  overflow: hidden;
+  display: block;
+}
+.wk-mask > span {
+  display: block;
+  transform: translateY(105%);
+  transition: transform 1.05s var(--wk-ease);
+}
+.wk-scene.is-live .wk-mask > span {
+  transform: translateY(0);
+}
+.wk-scene .wk-mask:nth-of-type(2) > span {
+  transition-delay: 0.08s;
+}
+
+.wk-eyebrow {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-subtle);
+  margin: 0 0 26px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.8s var(--wk-ease) 0.1s,
+    transform 0.8s var(--wk-ease) 0.1s;
+}
+.wk-scene.is-live .wk-eyebrow {
+  opacity: 1;
+  transform: none;
+}
+
+.wk-tick {
+  width: 26px;
+  height: 1px;
+  background: var(--color-line-strong);
+  flex: none;
+}
+
+.wk-title {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(38px, 6.4vw, 104px);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+  margin: 0;
+  max-width: 15ch;
+  color: var(--color-cream);
+}
+.wk-title em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--color-body);
+}
+
+.wk-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 40px;
+  margin-top: 34px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-line);
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.9s var(--wk-ease) 0.34s,
+    transform 0.9s var(--wk-ease) 0.34s;
+}
+.wk-scene.is-live .wk-foot {
+  opacity: 1;
+  transform: none;
+}
+
+.wk-line {
+  margin: 0;
+  font-size: clamp(14px, 1.15vw, 17px);
+  line-height: 1.5;
+  color: var(--color-body);
+  max-width: 46ch;
+}
+
+.wk-link {
+  flex: none;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-cream);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-line-strong);
+  padding-bottom: 5px;
+  transition: border-color 0.35s var(--wk-ease);
+}
+.wk-link:hover {
+  border-color: var(--color-cream);
+}
+
+/* ---------- rail ---------- */
+
+.wk-rail {
+  position: fixed;
+  right: var(--wk-gutter);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.wk-rail button {
+  all: unset;
+  cursor: pointer;
+  width: 30px;
+  height: 2px;
+  background: var(--color-line-strong);
+  transition:
+    background 0.45s var(--wk-ease),
+    width 0.45s var(--wk-ease);
+}
+.wk-rail button[aria-current='true'] {
+  background: var(--color-cream);
+  width: 46px;
+}
+
+/* ---------- scroll hint ---------- */
+
+.wk-hint {
+  position: fixed;
+  left: var(--wk-gutter);
+  /* Clears the accessibility FAB, which is fixed bottom-left and stands ~80px tall including its
+     own offset. At the prototype's 26px the two sat on top of each other. */
+  bottom: 96px;
+  z-index: 10;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-subtle);
+  transition: opacity 0.6s var(--wk-ease);
+}
+.wk-hint[data-gone='true'] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 768px) {
+  .wk-foot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .wk-rail {
+    right: 14px;
+  }
+  .wk-rail button {
+    width: 20px;
+  }
+  .wk-rail button[aria-current='true'] {
+    width: 32px;
+  }
+}
+
+/* ---------- reduced motion ----------
+   Snapping is a motion effect too: it moves the page further than the reader asked. Released
+   here so the track behaves as an ordinary scroll, and every reveal resolves to its finished
+   state — the base rules already describe the finished card, so nothing is left at opacity 0. */
+
+@media (prefers-reduced-motion: reduce) {
+  .wk-track {
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+  }
+  .wk-scene *,
+  .wk-scene *::before,
+  .wk-scene *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+  .wk-mask > span {
+    transform: none;
+  }
+  .wk-eyebrow,
+  .wk-foot {
+    opacity: 1;
+    transform: none;
+  }
+  .wk-fill {
+    transform: none;
+  }
+}
+
+/* ---------- fallback washes ----------
+   Stand-ins until a story has real media. Borrowed from the brand TONE gradients rather than
+   minting new colour, and deliberately dark so the foot type keeps its contrast. */
+
+.wk-t1 {
+  background: radial-gradient(120% 130% at 24% 22%, #1f9d6b 0%, #0f5a3d 44%, var(--color-page) 100%);
+}
+.wk-t2 {
+  background: radial-gradient(120% 130% at 72% 30%, #4f6bed 0%, #25307e 44%, var(--color-page) 100%);
+}
+.wk-t3 {
+  background: radial-gradient(120% 130% at 38% 68%, #c1285f 0%, #6d1734 44%, var(--color-page) 100%);
+}
+.wk-t4 {
+  background: radial-gradient(120% 130% at 62% 24%, #2f93da 0%, #134a78 44%, var(--color-page) 100%);
+}
+.wk-t5 {
+  background: radial-gradient(120% 130% at 28% 58%, #b6249a 0%, #5e1457 44%, var(--color-page) 100%);
+}
+.wk-t6 {
+  background: radial-gradient(120% 130% at 76% 44%, #7c3aed 0%, #3a1c8c 44%, var(--color-page) 100%);
+}

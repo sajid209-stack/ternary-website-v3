@@ -15,6 +15,35 @@ CMS later.
 
 ## Changes
 
+### /work scene headlines + reel order (staging)
+Via `scripts/seed-work-headlines.js` (idempotent). **Prod follow-up: replicate.** New `/work`
+page — the case-study reel, one study per viewport. Each story gains a two-line `workHeadline`
+(line 2 renders in the muted italic); the description line reuses the already-approved
+`excerpts`, so no new prose was written for it.
+
+The design prototype these came from carried four quantified claims — "booking volume grew
+sixfold in five months" (Turfly), "297 legacy pages" (DSE), "Forty spreadsheets" (FAROGL) and
+"every pitch in Dhaka" — none of which appears in DECK_COPY.md or SOURCES.md, and the Turfly
+figures had already been stripped site-wide in the Stories v2 pass. All four were rewritten
+count-free before anything was seeded:
+- `counterfoil-continuum` → "One control layer / for every revenue lever." (deck p24)
+- `turfly` → "From phone calls and guesswork / to instant confirmation." (deck p26 — replaces
+  the "sixfold in five months" line)
+- `lankabangla-securities` → "An AI that never / leaves the building." (deck p39, air-gapped)
+- `dhaka-stock-exchange` → "A legacy platform rebuilt, / nothing lost in transit." (replaces
+  "297 legacy pages")
+- `farogl-odoo-erp` → "Spreadsheets and handoffs, / replaced by one governed system." (replaces
+  "Forty spreadsheets"; deck p33)
+- `alley-analytix` → "A sensor in your grip, / a coach in the app." (deck p28 — the sensor is
+  finger-grip hardware, not on the ball as the prototype had it)
+- `doyouwork` → "Paper, phone calls, and spreadsheets, / retired into one platform." (deck p35)
+- `holcim` — **deliberately unset.** No source document exists for it (see the Stories v2 entry),
+  so its scene falls back to its own title rather than carrying a headline we cannot support.
+- `sortWeight` seeded 60 → 0 across the eight published stories so the reel opens on Counterfoil.
+  Without a weight the order fell back to creation date, which opened on holcim. Editable in the
+  admin sidebar.
+
+
 ### Header global — mega-menu panels (staging)
 `globals.header.menu[Capabilities|Solutions|Industries].panel`
 - **Old:** `type: 'mega'` set, but no `panel` (only legacy `subItems`) → dropdowns rendered empty.
