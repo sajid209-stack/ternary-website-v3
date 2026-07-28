@@ -15,6 +15,17 @@ CMS later.
 
 ## Changes
 
+### Header nav — "Work" added (staging)
+`globals.header.menu` via `scripts/seed-nav-work.js` (idempotent). **Prod follow-up: replicate.**
+- **Old:** Capabilities · Solutions · Industries · Scales · Stories
+- **New:** Capabilities · Solutions · Industries · Scales · **Work** · Stories
+A plain `link` entry (en "Work" / bn "কাজ") pointing at `/work`, shaped like the existing Scales
+row. Placed before Stories so the two content surfaces sit together and the portfolio reads first.
+- Code (same pass): `getGlobals.ts` CACHE_VERSION `v4 → v5`. The menu was seeded outside a Next
+  request, so no afterChange hook fired to bust the `header` tag — the file documents the bump as
+  the deterministic fix for exactly this, and without it the nav renders the old five-item menu.
+
+
 ### /work scene headlines + reel order (staging)
 Via `scripts/seed-work-headlines.js` (idempotent). **Prod follow-up: replicate.** New `/work`
 page — the case-study reel, one study per viewport. Each story gains a two-line `workHeadline`

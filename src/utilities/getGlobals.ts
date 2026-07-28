@@ -33,7 +33,10 @@ async function getGlobal(slug: Global, depth = 0, locale?: TypedLocale) {
  * Freshness is purely tag-driven (no time-based revalidate): out-of-request edits must be followed
  * by GET /next/revalidate or the admin "Revalidate site" button (or a CACHE_VERSION bump).
  */
-const CACHE_VERSION = 'v4'
+// v5: the header menu gained a "Work" entry via scripts/seed-nav-work.js. Seeded outside a Next
+// request, so no afterChange hook fired to bust the tag — without this bump the nav renders the
+// five-item menu forever.
+const CACHE_VERSION = 'v5'
 
 function cachedGlobal(slug: Global, depth: number, tags: string[], locale?: TypedLocale) {
   return unstable_cache(
