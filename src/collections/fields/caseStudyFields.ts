@@ -41,6 +41,29 @@ export const caseStudyFields: Field[] = [
     ],
   },
 
+  // Numbered "how we worked" sequence rendered by <NumberedSteps> between the write-up and the
+  // media showcase. Two rows minimum (a single step is not a sequence) and four maximum — the
+  // component lays out at most three columns before wrapping, and the band reads as a summary,
+  // not a project plan. The band is guarded on this array, so leaving it empty hides it entirely
+  // and the page's section numbering closes up behind it.
+  //
+  // Row structure is shared across locales with localized leaves, matching the capability
+  // collection's `howWeDoIt.items` — the same content shape this component already renders there.
+  {
+    name: 'steps',
+    label: 'How We Worked',
+    type: 'array',
+    minRows: 2,
+    maxRows: 4,
+    admin: {
+      description: 'Numbered steps (2–4) shown after the write-up. Keep the bodies a similar length so they align.',
+    },
+    fields: [
+      { name: 'title', label: 'Title', type: 'text', localized: true },
+      { name: 'body', label: 'Body', type: 'textarea', localized: true },
+    ],
+  },
+
   // 5-cell meta strip beneath the hero.
   {
     name: 'caseMeta',
