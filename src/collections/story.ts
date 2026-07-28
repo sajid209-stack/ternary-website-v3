@@ -1,4 +1,5 @@
 import { caseStudyFields } from '@/collections/fields/caseStudyFields'
+import { feedFields, feedPublishedDateField } from '@/collections/fields/feedFields'
 import { makeContentCollection } from '@/collections/makeContentCollection'
 import type { CollectionConfig } from 'payload'
 
@@ -15,6 +16,10 @@ const base = makeContentCollection('story', {
 
 // Append the structured case-study fields to the story collection only (other collections that
 // share makeContentCollection stay byte-identical — see caseStudyFields.ts).
-const story: CollectionConfig = { ...base, fields: [...base.fields, ...caseStudyFields] }
+const story: CollectionConfig = {
+  ...base,
+  // `feedPublishedDateField` is story-only: insight and pressRelease already carry their own date.
+  fields: [...base.fields, ...caseStudyFields, ...feedFields, feedPublishedDateField],
+}
 
 export default story
