@@ -35,8 +35,9 @@
   position: relative;
   height: var(--wk-vh);
   scroll-snap-align: start;
-  /* A hard flick cannot skip a study; every one gets its moment. */
-  scroll-snap-stop: always;
+  /* `normal`, not `always`: a scene still snaps, but a hard flick may pass several at once, so a
+     reader can move through the reel at their own pace instead of being stopped at every study. */
+  scroll-snap-stop: normal;
   overflow: hidden;
   display: flex;
   align-items: flex-end;
