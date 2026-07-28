@@ -101,7 +101,7 @@ export default function StoryRow({ item, index }: { item: FeedItem; index: numbe
 
       <div className="order-2 flex flex-col md:order-1 md:col-span-6 md:col-start-1 lg:col-span-5">
         <motion.h3
-          className="font-display text-[clamp(1.75rem,3.4vw,2.75rem)] font-medium leading-[1.08] tracking-[-0.03em] text-cream"
+          className="font-display text-[clamp(1.75rem,2.6vw,2.5rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream"
           variants={{ rest: { color: 'var(--color-cream)' }, hover: { color: 'var(--color-cream-hover)' } }}
           transition={{ duration: 0.4, ease: EASE }}
         >
@@ -113,13 +113,18 @@ export default function StoryRow({ item, index }: { item: FeedItem; index: numbe
           )}
         </motion.h3>
 
-        <p className="mt-5 font-mono text-[12px] uppercase tracking-[0.14em] text-subtle">{item.eyebrow}</p>
-        <p className="mt-2 font-mono text-[12px] tabular-nums tracking-[0.02em] text-subtle">{item.date}</p>
+        {/* Meta stack: category then date, nothing else. `text-subtle` is the project's muted tier
+            — a literal opacity 0.5 on cream is banned for text by the contrast guard
+            (tests/int/contrast.int.spec.ts); see the note in the report. */}
+        <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.08em] text-subtle">{item.eyebrow}</p>
+        <p className="mt-2 font-mono text-[11px] uppercase tabular-nums tracking-[0.08em] text-subtle">{item.date}</p>
       </div>
     </>
   )
 
-  const gridClass = 'grid grid-cols-1 items-start gap-6 md:grid-cols-12 md:gap-8'
+  // 12 columns, 24px gap. Title occupies 1–5 and media 9–12; columns 6, 7 and 8 are left empty on
+  // purpose — that gutter is the layout, so nothing may be placed in it.
+  const gridClass = 'grid grid-cols-1 items-start gap-6 md:grid-cols-12'
   const linkClass = cn(
     gridClass,
     'rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cream',
@@ -133,7 +138,7 @@ export default function StoryRow({ item, index }: { item: FeedItem; index: numbe
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.06, 0.36) }}
     >
-      <motion.div initial="rest" whileHover="hover" whileFocus="hover" animate="rest" className="py-10 lg:py-14">
+      <motion.div initial="rest" whileHover="hover" whileFocus="hover" animate="rest" className="py-12">
         {item.isExternal ? (
           <a
             href={item.href}
