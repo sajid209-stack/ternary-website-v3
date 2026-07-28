@@ -2,6 +2,7 @@ import { detailPreviewURL } from '@/utilities/livePreview'
 import { revalidateTag } from 'next/cache'
 import { CollectionConfig, slugField } from 'payload'
 
+import { feedFields } from '@/collections/fields/feedFields'
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 
@@ -263,6 +264,7 @@ const Insight: CollectionConfig = {
         },
       ],
     },
+    ...feedFields,
   ],
 }
 

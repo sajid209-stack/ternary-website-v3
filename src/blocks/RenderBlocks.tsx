@@ -168,7 +168,7 @@ function renderBlock(block: BlockType, locale?: TypedLocale): JSX.Element | null
     case 'featureCaseStudy':
       return <FeatureCaseStudyComponent {...block} />
     case 'storiesArchive':
-      return <StoriesArchiveComponent {...block} />
+      return <StoriesArchiveComponent {...block} locale={locale} />
     case 'insightsList':
       return <InsightsListComponent {...block} />
     case 'categoryLanding':

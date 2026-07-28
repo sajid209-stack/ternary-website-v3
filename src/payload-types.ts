@@ -404,6 +404,30 @@ export interface Story {
     team?: string | null;
     year?: string | null;
   };
+  /**
+   * Higher sorts earlier on /stories. Ties fall back to the published date.
+   */
+  sortWeight?: number | null;
+  /**
+   * External items link offsite and show the source label instead of the category.
+   */
+  linkType?: ('internal' | 'external') | null;
+  /**
+   * Full URL including https://
+   */
+  externalUrl?: string | null;
+  /**
+   * Shown in place of the category, e.g. “Read it on Forbes”.
+   */
+  sourceLabel?: string | null;
+  /**
+   * Still frame used when the thumbnail is a video. Ignored for image thumbnails.
+   */
+  posterImage?: (string | null) | Media;
+  /**
+   * Shown on the /stories row and used as the fallback sort.
+   */
+  publishedDate?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -688,6 +712,26 @@ export interface Insight {
       link?: string | null;
     };
   };
+  /**
+   * Higher sorts earlier on /stories. Ties fall back to the published date.
+   */
+  sortWeight?: number | null;
+  /**
+   * External items link offsite and show the source label instead of the category.
+   */
+  linkType?: ('internal' | 'external') | null;
+  /**
+   * Full URL including https://
+   */
+  externalUrl?: string | null;
+  /**
+   * Shown in place of the category, e.g. “Read it on Forbes”.
+   */
+  sourceLabel?: string | null;
+  /**
+   * Still frame used when the thumbnail is a video. Ignored for image thumbnails.
+   */
+  posterImage?: (string | null) | Media;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -921,6 +965,26 @@ export interface PressRelease {
     } | null;
     pressReleases?: (string | PressRelease)[] | null;
   };
+  /**
+   * Higher sorts earlier on /stories. Ties fall back to the published date.
+   */
+  sortWeight?: number | null;
+  /**
+   * External items link offsite and show the source label instead of the category.
+   */
+  linkType?: ('internal' | 'external') | null;
+  /**
+   * Full URL including https://
+   */
+  externalUrl?: string | null;
+  /**
+   * Shown in place of the category, e.g. “Read it on Forbes”.
+   */
+  sourceLabel?: string | null;
+  /**
+   * Still frame used when the thumbnail is a video. Ignored for image thumbnails.
+   */
+  posterImage?: (string | null) | Media;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -5553,6 +5617,12 @@ export interface StorySelect<T extends boolean = true> {
         team?: T;
         year?: T;
       };
+  sortWeight?: T;
+  linkType?: T;
+  externalUrl?: T;
+  sourceLabel?: T;
+  posterImage?: T;
+  publishedDate?: T;
   meta?:
     | T
     | {
@@ -5616,6 +5686,11 @@ export interface InsightSelect<T extends boolean = true> {
               link?: T;
             };
       };
+  sortWeight?: T;
+  linkType?: T;
+  externalUrl?: T;
+  sourceLabel?: T;
+  posterImage?: T;
   meta?:
     | T
     | {
@@ -5708,6 +5783,11 @@ export interface PressReleaseSelect<T extends boolean = true> {
         description?: T;
         pressReleases?: T;
       };
+  sortWeight?: T;
+  linkType?: T;
+  externalUrl?: T;
+  sourceLabel?: T;
+  posterImage?: T;
   meta?:
     | T
     | {
