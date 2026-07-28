@@ -44,12 +44,12 @@ const POSTURE = [
   {
     k: 'a',
     title: 'Traceable by default',
-    body: 'Every consequential action is attributable and replayable.',
+    body: 'Every consequential action is attributable and replayable, months after the fact.',
   },
   {
     k: 'b',
     title: 'Deployed inside the boundary',
-    body: 'On-premises and air-gapped patterns where the data can’t leave the building.',
+    body: 'On-premises and air-gapped patterns, for data that legally cannot leave the building.',
   },
   {
     k: 'c',
