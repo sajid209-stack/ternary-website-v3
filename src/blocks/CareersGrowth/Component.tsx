@@ -1,99 +1,83 @@
-import { BentoCard } from '@/components/layout/bentoCard'
-import Section from '@/components/layout/section'
-import type { CareersGrowthBlock, Media } from '@/payload-types'
+import RichTextComp, { type RichText } from '@/components/richtext'
+import type { CareersGrowthBlock } from '@/payload-types'
 import type { JSX } from 'react'
 
-export function CareersGrowthComponent(props: CareersGrowthBlock): JSX.Element {
-  const item1 = props.featured
-  const item2 = props.items?.[0]
-  const item3 = props.items?.[1]
-  const item4 = props.items?.[2]
-  const item5 = props.items?.[3]
+/**
+ * "Engineering growth" — a progression ladder over supporting cards, per the approved prototype.
+ *
+ * REPLACES a BentoCard grid. The ladder is the point of this section, and a grid flattened four
+ * ordered levels into four equal boxes; rows with a hairline between them keep the order legible.
+ * Each rung shifts right on hover.
+ *
+ * The levels come from `featured.levels` (a tags array, max 4) paired with the featured
+ * title/excerpt; the supporting cards come from `items`. Both are CMS-driven — the old component
+ * had `||` fallbacks for every string, so an empty CMS rendered unapproved copy. Empty renders
+ * nothing now.
+ *
+ * CONTENT: all strings are CMS values, unchanged.
+ */
+export function CareersGrowthComponent({
+  heading,
+  description,
+  featured,
+  items,
+}: CareersGrowthBlock): JSX.Element | null {
+  const levels = featured?.levels ?? []
+  if (!heading && !levels.length && !items?.length) return null
 
   return (
-    <Section
-      title={props.heading || 'Engineering growth. Deliberate and structured.'}
-      desc={
-        props.description ||
-        'We are committed to your professional development. We provide clear career paths, mentorship opportunities, and the resources you need to reach your full potential.'
-      }
-    >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Top Row */}
-        <BentoCard
-          className="md:col-span-2 relative overflow-hidden"
-          title={item1?.title || 'Structured leveling & clear progression'}
-          desc={
-            item1?.excerpt ||
-            "Our career framework provides a clear path for advancement. You'll always know where you stand and what you need to do to reach the next level."
-          }
-        >
-          {/* Simulated Graph Line */}
-          <div className="absolute right-0 bottom-0 w-2/3 h-1/2 opacity-20 pointer-events-none z-0">
-            <svg viewBox="0 0 100 50" preserveAspectRatio="none" className="w-full h-full stroke-white fill-none">
-              <path
-                d="M0,48 C8,47 14,44 22,38 C32,30 40,18 50,14 C60,10 70,16 80,10 C90,4 96,2 100,0"
-                strokeWidth="1"
-                vectorEffect="non-scaling-stroke"
-              />
-              <path
-                d="M0,44 C8,43 14,40 22,34 C32,26 40,14 50,10 C58,8 66,10 74,12 C80,14 84,13 88,12"
-                strokeWidth="1"
-                strokeDasharray="2 3"
-                vectorEffect="non-scaling-stroke"
-              />
-            </svg>
-          </div>
-          <div className="relative z-10 mt-8 grid grid-cols-2 gap-4 border-t border-white/10 pt-6 lg:grid-cols-4">
-            {item1?.levels?.map((level, i) => (
+    <section className="pb-28 lg:pb-32">
+      <div className="cs-wrap">
+        <div className="mb-14 max-w-[52ch] lg:mb-[70px]">
+          {heading ? (
+            <h2 className="cs-h2 mb-5">
+              <span data-cs="mask" className="cs-mask">
+                {heading}
+              </span>
+            </h2>
+          ) : null}
+          {description ? (
+            <div className="cs-body">
+              <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-inherit" />
+            </div>
+          ) : null}
+        </div>
+
+        {/* The ladder. `levels` carries the rung names; the featured excerpt sits under the
+            heading rather than being repeated per rung. */}
+        {levels.length ? (
+          <div data-cs-group>
+            {levels.map((lvl, i) => (
               <div
-                key={i}
-                className="flex flex-col items-start justify-center rounded-lg bg-page px-8 py-4 transition-colors duration-300"
+                key={lvl.id ?? i}
+                data-cs-item
+                className="cs-row grid grid-cols-1 items-baseline gap-y-2 py-8 lg:grid-cols-12 lg:gap-6"
               >
-                <div className="font-display text-lg/[1.5] font-medium text-cream opacity-90">{level?.name || ''}</div>
+                <span aria-hidden className="cs-meta lg:col-span-1">
+                  L{String(i + 1).padStart(2, '0')}
+                </span>
+                <p className="m-0 font-display text-[clamp(22px,2.4vw,36px)] font-medium tracking-[-0.025em] lg:col-span-4">
+                  {lvl.name}
+                </p>
               </div>
             ))}
           </div>
-        </BentoCard>
+        ) : null}
 
-        <BentoCard
-          className="h-full"
-          icon={item2?.icon ?? undefined}
-          title={item2?.title || 'Mentorship & technical development'}
-          desc={
-            item2?.excerpt ||
-            'Learn from experienced engineers through our mentorship program and ongoing technical training.'
-          }
-        />
-
-        {/* Bottom Row */}
-        <BentoCard
-          icon={item3?.icon ?? undefined}
-          title={item3?.title || 'Competitive compensation & benefits'}
-          desc={
-            item3?.excerpt ||
-            'We offer highly competitive salaries, comprehensive health coverage, and generous equity packages.'
-          }
-        />
-        <BentoCard
-          icon={item4?.icon ?? undefined}
-          title={item4?.title || 'Leadership & influence opportunities'}
-          desc={
-            item4?.excerpt || 'Take on leadership roles and shape the technical direction of our products and teams.'
-          }
-        />
-        <BentoCard
-          className="h-full"
-          noIcon
-          icon={item5?.icon ?? undefined}
-          imageBg={(item5?.media as Media)?.url || undefined}
-          title={item5?.title || 'Move with velocity'}
-          desc={
-            item5?.excerpt ||
-            'Our agile processes ensure we are always building what matters most, quickly and efficiently.'
-          }
-        />
+        {/* Supporting cards — stack, lifecycle, delivery hub. */}
+        {items?.length ? (
+          <div data-cs-group className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3 lg:mt-20">
+            {items.map((item, i) => (
+              <div key={item.id ?? i} data-cs-item className="border-t border-[rgba(242,240,234,0.14)] pt-7">
+                {item.title ? (
+                  <h3 className="mb-3 font-display text-[18px] font-medium tracking-[-0.01em]">{item.title}</h3>
+                ) : null}
+                {item.excerpt ? <p className="cs-body text-[16px]">{item.excerpt}</p> : null}
+              </div>
+            ))}
+          </div>
+        ) : null}
       </div>
-    </Section>
+    </section>
   )
 }
