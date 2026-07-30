@@ -8,6 +8,7 @@ import { Fragment } from 'react'
 import AboutEditorialCta from '@/components/about/AboutEditorialCta'
 import ShaderHero from '@/components/ShaderHero'
 import AboutExperience from '@/components/about/AboutExperience'
+import CareersScene from '@/components/careers/CareersScene'
 import Motion from '@/components/animation/motion'
 import { AboutApproachComponent } from './AboutApproach/Component'
 import { AboutBeliefsComponent } from './AboutBeliefs/Component'
@@ -229,7 +230,7 @@ function renderBlock(block: BlockType, locale?: TypedLocale, slug?: string): JSX
     case 'aboutLeadership':
       return <AboutLeadershipComponent {...block} locale={locale} />
     case 'careersHero':
-      return <CareersHeroComponent {...block} />
+      return <CareersHeroComponent {...block} locale={locale} />
     case 'careersGridOne':
       return <CareersGridOneComponent {...block} />
     case 'careersGridTwo':
@@ -270,7 +271,9 @@ export function RenderBlocks({
   // correctly, so the following scene slid up underneath the still-pinned one and two or three
   // scenes rendered on top of each other between roughly 16% and 50% of the page. Measured, not
   // theorised. The scenes are full-width blocks and never needed flex.
-  const containerClass = isAbout
+  const isCareers = slug === 'careers'
+
+  const containerClass = isAbout || isCareers
     ? 'block w-full text-cream pb-10 lg:pb-24'
     : 'flex flex-col gap-16 lg:gap-[72px] text-cream max-w-7xl mx-auto w-full px-5 md:px-8 lg:px-12 pt-20 lg:pt-40 lg:pb-24 pb-10'
 
@@ -315,5 +318,10 @@ export function RenderBlocks({
   // One engine for the whole About page, not a wrapper per block — that is what lets the scenes
   // hand over to each other rather than behave as independent widgets. The Leadership block sits
   // inside it but carries no scene marker, so nothing in the engine reaches it.
-  return isAbout ? <AboutExperience>{content}</AboutExperience> : content
+  if (isAbout) return <AboutExperience>{content}</AboutExperience>
+  // Careers runs its own scene layer: the sections are full-width and own their vertical rhythm,
+  // and the engine replaces the shared <Motion> reveals that were shipping 39 elements at inline
+  // opacity:0 into the SSR HTML.
+  if (isCareers) return <CareersScene>{content}</CareersScene>
+  return content
 }

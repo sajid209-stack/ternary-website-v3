@@ -1,97 +1,104 @@
-import Motion from '@/components/animation/motion'
+import { CareersHeroHeadline } from '@/components/careers/CareersScene'
 import RichTextComp, { type RichText } from '@/components/richtext'
-import type { CareersHeroBlock, Media } from '@/payload-types'
+import type { CareersHeroBlock } from '@/payload-types'
 import type { JSX } from 'react'
 
 /**
- * Careers hero (design node 943:5379, elevated).
+ * Careers hero — the editorial opening from the approved prototype.
  *
- * A quiet two-column intro: a Poppins display headline + Inter description + a filled eggshell
- * "View Opportunities" CTA on the left, balanced by a tall full-height teal noise-gradient panel
- * on the right. The panel reuses the homepage hero's signature device — a radial-gradient TONE
- * with a local /noise.svg grain overlay and a bottom scrim — so it renders identically whether or
- * not the CMS media (S3) is available (image is layered on top and degrades to the gradient).
+ * REPLACES a two-column intro whose right half was a teal gradient panel: the CMS image was
+ * layered at 60% over a `radial-gradient(#2f9d8a → #0a2d28)` fallback, so with no S3 media it was
+ * a solid teal block. Same placeholder pattern removed from About.
  *
- * Server component. Reveals use the shared <Motion> wrapper (honours prefers-reduced-motion and
- * fires once); the CTA hover/focus is pure Tailwind.
+ * The headline is now split into 3D character blocks and flipped up once on load (Latin locales
+ * only — see CareersHeroHeadline), over a monochrome technical field that drifts on scroll and
+ * leans to the cursor.
+ *
+ * PALETTE DIFFERS FROM THE PROTOTYPE, deliberately. That mockup put a purple glow
+ * (rgba(124,58,237,.55)) behind the hero and violet signal streaks across the grid. Purple is
+ * ruled out here, so the field is grey on black and the one green accent is spent on the roles
+ * list, where it marks the active row.
+ *
+ * The heading is a plain text field and carries no markup; the two lines come from a newline. A
+ * single-line heading simply renders as one line.
+ *
+ * CONTENT: heading, description and the button label are CMS strings, unchanged.
  */
+export function CareersHeroComponent(
+  props: CareersHeroBlock & { locale?: string },
+): JSX.Element | null {
+  const { heading, description, buttons, locale } = props
+  if (!heading && !description) return null
 
-const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+  const lines = (heading ?? '').split('\n').map((l) => l.trim()).filter(Boolean)
+  const button = buttons?.[0]
 
-// Teal→green field matching the design's header image, origin top-left so the brightest point
-// reads as a light source the grain sits over.
-const TEAL_FIELD = 'radial-gradient(125% 125% at 22% 16%, #2f9d8a 0%, #1b6f5b 42%, #0a2d28 100%)'
-
-export function CareersHeroComponent(props: CareersHeroBlock): JSX.Element {
-  const button = props.buttons?.[0]
-  const headingLines = (props.heading || 'Agentic Engineering. Human Orchestration.')
-    .split(/\.\s+/)
-    .filter(Boolean)
-    .map((line, i, arr) => (i < arr.length - 1 || (props.heading || '').trim().endsWith('.') ? `${line}.` : line))
-  const mediaUrl = (props.image as Media)?.url || undefined
+  // An irregular column rhythm on purpose — an even grid reads as background texture and
+  // disappears; uneven spacing makes it read as a drawing.
+  const cols = [4, 12, 21, 33, 39, 52, 61, 74, 83, 88, 96]
+  const rows = [18, 34, 52, 71, 86]
 
   return (
-    <Motion
-      tag="section"
-      className="grid items-center gap-8 lg:grid-cols-2 lg:gap-8"
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: EASE }}
+    <section
+      className="cs-hero relative isolate flex min-h-[92svh] items-center overflow-hidden py-28 lg:py-32"
     >
-      <div className="flex flex-col gap-10">
-        <div className="flex flex-col gap-6">
-          <h1 className="font-display text-[clamp(2rem,5vw,2.5rem)] font-medium leading-[1.12] tracking-[-0.04em] text-cream">
-            {headingLines.map((line, i) => (
-              <span key={i} className="block">
-                {line}
-              </span>
-            ))}
-          </h1>
-          <RichTextComp
-            content={
-              (props.description as RichText) ||
-              'Build production systems you own end to end. We hire engineers who want technical depth, operational accountability, and real influence over what ships.'
-            }
-            className="max-w-[34rem] prose-p:mb-0 prose-p:text-base prose-p:font-medium prose-p:leading-[1.5] prose-p:text-body"
+      <svg
+        aria-hidden
+        data-cs="field"
+        className="pointer-events-none absolute inset-0 -z-10 h-full w-full [mask-image:radial-gradient(115%_90%_at_30%_35%,#000_0%,rgba(0,0,0,0.4)_58%,transparent_88%)]"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        focusable="false"
+      >
+        {cols.map((x) => (
+          <line
+            key={`c${x}`}
+            x1={x}
+            y1="0"
+            x2={x}
+            y2="100"
+            stroke="rgba(242,240,234,0.07)"
+            strokeWidth="1"
+            vectorEffect="non-scaling-stroke"
           />
-        </div>
-        <div>
-          <a
-            href={button?.url || '#open-roles'}
-            className="inline-flex h-10 items-center justify-center rounded-lg bg-cream px-4 text-[14px] font-semibold tracking-tight text-ink transition-colors duration-200 hover:bg-cream-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-page"
-          >
-            {button?.label || 'View Opportunities'}
-          </a>
+        ))}
+        {rows.map((y) => (
+          <line
+            key={`r${y}`}
+            x1="0"
+            y1={y}
+            x2="100"
+            y2={y}
+            stroke="rgba(242,240,234,0.07)"
+            strokeWidth="1"
+            vectorEffect="non-scaling-stroke"
+          />
+        ))}
+      </svg>
+
+      <div className="cs-wrap">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-end lg:gap-6">
+          <h1 className="cs-h1 lg:col-span-8">
+            <CareersHeroHeadline lines={lines.length ? lines : [heading ?? '']} locale={locale} />
+          </h1>
+
+          <div className="lg:col-span-3 lg:col-start-10">
+            {description ? (
+              <div className="cs-body mb-7">
+                <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-inherit" />
+              </div>
+            ) : null}
+            {button?.label ? (
+              <a
+                href={button.url || '#open-roles'}
+                className="cs-meta inline-flex items-center gap-2.5 bg-[#f2f0ea] px-6 py-4 !text-[#050505] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2f0ea] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505]"
+              >
+                {button.label} →
+              </a>
+            ) : null}
+          </div>
         </div>
       </div>
-
-      <Motion
-        tag="div"
-        className="relative aspect-[4/3] w-full overflow-hidden rounded-md lg:aspect-auto lg:h-[500px]"
-        initial={{ opacity: 0, scale: 0.985 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.7, ease: EASE, delay: 0.1 }}
-      >
-        {/* Gradient field — the always-present base so the panel is never an empty/broken box. */}
-        <span aria-hidden className="absolute inset-0" style={{ backgroundImage: TEAL_FIELD }} />
-        {/* Optional CMS photo layered on top; if the S3 media is missing the gradient shows through. */}
-        {mediaUrl && (
-          <img
-            src={mediaUrl}
-            alt=""
-            aria-hidden
-            className="absolute inset-0 h-full w-full object-cover opacity-60 mix-blend-luminosity"
-          />
-        )}
-        {/* Signature grain overlay (local asset, no external dependency). */}
-        <span
-          aria-hidden
-          className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay"
-        />
-        {/* Bottom scrim to ground the panel against the page. */}
-        <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/0 via-transparent to-black/40" />
-      </Motion>
-    </Motion>
+    </section>
   )
 }

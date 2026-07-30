@@ -1,0 +1,272 @@
+/* Careers — the scene layer.
+ *
+ * Layout and motion follow the approved prototype. The palette does not: the prototype was built
+ * on purple (#A78BFA / #7C3AED / #C026D3) with body copy at rgba(242,243,244,.46), and both were
+ * ruled out for this site — purple gradients and rainbow palettes are explicitly out, and the
+ * strict-contrast rule allows no grey or reduced-opacity text anywhere. So every accent here is
+ * the restrained Ternary green, every gradient is monochrome, and all text is full strength.
+ *
+ * DEFAULT STATE IS VISIBLE. Nothing in this file hides anything; every start state is written by
+ * CareersScene from JavaScript. Without JS, before hydration, or under reduced motion the page is
+ * a complete readable document. The careers page currently ships 39 elements at inline opacity:0
+ * — the same SSR defect fixed on About — and this replaces that.
+ */
+
+.cs {
+  --cs-ink: #050505;
+  --cs-fg: #f2f0ea;
+  --cs-accent: #1f9d6b;
+  --cs-line: rgba(242, 240, 234, 0.14);
+  --cs-line-strong: rgba(242, 240, 234, 0.34);
+  --cs-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  background-color: var(--cs-ink);
+  color: var(--cs-fg);
+}
+
+/* Every text tier is full strength. Hierarchy comes from size, weight, tracking and rules —
+   never from fading text down. */
+.cs :is(h1, h2, h3, h4, h5, p, li, span, a) {
+  color: var(--cs-fg);
+}
+.cs .cs-meta {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.cs-wrap {
+  width: 100%;
+  max-width: 1480px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 4vw, 64px);
+}
+
+/* ── type ───────────────────────────────────────────────────────────────── */
+.cs-h1 {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(40px, 7vw, 118px);
+  line-height: 0.96;
+  letter-spacing: -0.038em;
+  font-weight: 500;
+  max-width: 16ch;
+  margin: 0;
+}
+.cs-h2 {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(30px, 4.4vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.032em;
+  font-weight: 500;
+  margin: 0;
+}
+.cs-body {
+  font-size: clamp(16px, 1.05vw, 18px);
+  line-height: 1.6;
+  max-width: 46ch;
+  margin: 0;
+}
+
+/* ── masked line reveal ─────────────────────────────────────────────────── */
+.cs-mask {
+  overflow: hidden;
+  display: block;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+/* ── hero 3D character reveal ───────────────────────────────────────────────
+   Same structure proven on the About hero: only the front face is a real text node and the two
+   back faces are generated content. Rendering three spans there tripled the headline's
+   textContent and broke copy-paste and crawler output. */
+.cs-char {
+  display: inline-block;
+  position: relative;
+  transform-style: preserve-3d;
+  transform-origin: 50% 50% -0.5em;
+  will-change: transform;
+}
+.cs-char::before,
+.cs-char::after {
+  content: attr(data-ch);
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+.cs-char::before {
+  transform: rotateX(90deg) translateZ(0.5em);
+  transform-origin: top;
+}
+.cs-char::after {
+  transform: rotateX(-90deg) translateZ(0.5em);
+  transform-origin: bottom;
+}
+.cs-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+.cs-line {
+  display: block;
+}
+.cs-hero {
+  perspective: 600px;
+}
+
+/* ── rows: how we work, growth ladder ───────────────────────────────────── */
+.cs-row {
+  border-top: 1px solid var(--cs-line);
+  transition: padding-left 0.5s var(--cs-ease);
+}
+@media (hover: hover) {
+  .cs-row:hover {
+    padding-left: 20px;
+  }
+}
+
+/* ── covers ─────────────────────────────────────────────────────────────────
+   Monochrome, not the prototype's purple. Depth comes from luminance alone. */
+.cs-cover {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--cs-line);
+  background: #0c0d0e;
+}
+.cs-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transition: transform 1s var(--cs-ease);
+}
+.cs-cover-1::after {
+  background: radial-gradient(130% 130% at 25% 20%, #2a2c2e, #0b0b0c 62%);
+}
+.cs-cover-2::after {
+  background: radial-gradient(130% 130% at 70% 25%, #35383a, #0b0b0c 62%);
+}
+.cs-cover-3::after {
+  background: radial-gradient(130% 130% at 40% 60%, #43474a, #0b0b0c 66%);
+}
+.cs-cover-4::after {
+  background: radial-gradient(130% 130% at 65% 35%, #55595d, #0b0b0c 64%);
+}
+.cs-cover-5::after {
+  background: radial-gradient(130% 130% at 50% 50%, #6a6f74, #0b0b0c 60%);
+}
+@media (hover: hover) {
+  .cs-row:hover .cs-cover::after,
+  .cs-item:hover .cs-cover::after {
+    transform: scale(1.06);
+  }
+}
+
+/* ── roles ──────────────────────────────────────────────────────────────── */
+.cs-role {
+  position: relative;
+  display: block;
+  text-decoration: none;
+  border-top: 1px solid var(--cs-line);
+  transition: padding-left 0.5s var(--cs-ease);
+}
+.cs-role:last-of-type {
+  border-bottom: 1px solid var(--cs-line);
+}
+/* The signal bar that wipes across on hover — green, the one accent. */
+.cs-role::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 1px;
+  width: 0;
+  background: var(--cs-accent);
+  transition: width 0.6s var(--cs-ease);
+}
+@media (hover: hover) {
+  .cs-role:hover {
+    padding-left: 20px;
+  }
+  .cs-role:hover::before {
+    width: 100%;
+  }
+  .cs-role:hover .cs-go {
+    transform: translateX(6px);
+  }
+}
+.cs-go {
+  transition: transform 0.4s var(--cs-ease);
+}
+.cs-role.is-hidden {
+  display: none;
+}
+
+/* ── filter chips ───────────────────────────────────────────────────────── */
+.cs-chip {
+  cursor: pointer;
+  padding: 9px 16px;
+  border: 1px solid var(--cs-line);
+  background: transparent;
+  transition:
+    border-color 0.3s,
+    background-color 0.3s,
+    color 0.3s;
+}
+.cs-chip:hover {
+  border-color: var(--cs-line-strong);
+}
+/* Active is a solid fill, so it never depends on a colour difference alone. */
+.cs-chip.is-on {
+  background: var(--cs-fg);
+  border-color: var(--cs-fg);
+  color: var(--cs-ink) !important;
+}
+
+/* ── voices rail ────────────────────────────────────────────────────────── */
+.cs-rail {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 16px;
+}
+.cs-rail::-webkit-scrollbar {
+  height: 0;
+}
+.cs-vcard {
+  flex: 0 0 clamp(280px, 30vw, 420px);
+  scroll-snap-align: start;
+}
+.cs-portrait {
+  aspect-ratio: 4 / 5;
+  background: #101214;
+  overflow: hidden;
+  position: relative;
+}
+.cs-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
+  transition: transform 1s var(--cs-ease);
+}
+@media (hover: hover) {
+  .cs-vcard:hover .cs-portrait img {
+    transform: scale(1.05);
+  }
+}
+
+/* The engine never builds a timeline under either signal; these catch a preference that changes
+   after load, and the site's own A11yFab toggle. */
+@media (prefers-reduced-motion: reduce) {
+  .cs *,
+  .cs *::before,
+  .cs *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+html[data-a11y-motion='reduce'] .cs *,
+html[data-a11y-motion='reduce'] .cs *::before {
+  transition: none !important;
+  animation: none !important;
+}

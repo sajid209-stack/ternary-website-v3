@@ -1,92 +1,64 @@
-import Corousel from '@/components/animation/corousel'
-import { BentoCard } from '@/components/layout/bentoCard'
-import Section from '@/components/layout/section'
-import type { CareersGridTwoBlock, Media } from '@/payload-types'
+import RichTextComp, { type RichText } from '@/components/richtext'
+import type { CareersGridTwoBlock } from '@/payload-types'
 import type { JSX } from 'react'
 
-export function CareersGridTwoComponent(props: CareersGridTwoBlock): JSX.Element {
-  const item1 = props.items?.[0]
-  const item2 = props.items?.[1]
-  const item3 = props.items?.[2]
-  const item4 = props.items?.[3]
-  const mobileCards = [
-    {
-      title: item1?.title || 'Genuine Connection',
-      desc:
-        item1?.excerpt ||
-        'Build meaningful relationships with your colleagues. We foster a culture of collaboration and mutual support, where everyone feels like they belong.',
-      imageBg: (item1?.media as Media)?.url || undefined,
-    },
-    {
-      title: item2?.title || 'Genuine Connection',
-      desc:
-        item2?.excerpt ||
-        'Build meaningful relationships with your colleagues. We foster a culture of collaboration and mutual support, where everyone feels like they belong.',
-      imageBg: (item2?.media as Media)?.url || undefined,
-    },
-    {
-      title: item3?.title || 'Ship agentic products',
-      desc:
-        item3?.excerpt ||
-        'Work on products that have a real impact. We build tools that empower users to achieve more.',
-    },
-    {
-      title: item4?.title || 'Move with velocity',
-      desc:
-        item4?.excerpt ||
-        "We move fast and iterate quickly. You'll have the opportunity to see your work in the hands of users rapidly.",
-    },
-  ]
+/**
+ * "What you can expect" — three columns, each opening with a cover, per the approved prototype.
+ *
+ * REPLACES a BentoCard grid plus a separate mobile carousel. Same treatment as the row list
+ * above: a hairline over each column, the cover wiping open from the bottom, and the columns
+ * stacking on narrow screens rather than becoming a horizontal scroller.
+ *
+ * ALSO REMOVES hardcoded fallback copy. Every field had an `||` default, and two of them were
+ * the *same* placeholder ("Genuine Connection", twice), so an empty CMS rendered duplicated,
+ * unapproved marketing text. Empty fields now render nothing.
+ *
+ * Covers are a monochrome ramp, not the prototype's #4C1D95 → #C026D3 violets.
+ *
+ * CONTENT: heading, description and each card's title/excerpt are CMS strings, unchanged.
+ */
+export function CareersGridTwoComponent({ heading, description, items }: CareersGridTwoBlock): JSX.Element | null {
+  if (!heading && !items?.length) return null
 
   return (
-    <Section
-      title={props.heading || 'Work hard. Live fully.'}
-      desc={
-        props.description ||
-        'We believe that your best work happens when you have a healthy balance. We provide the support and resources you need to thrive both professionally and personally.'
-      }
-    >
-      <div className="lg:hidden">
-        <Corousel variant="careerCards" navVariant="dots" items={mobileCards} />
-      </div>
-      {/* Figma 943:5963: tall image on the left (577px / full 600px height) + a 2x2 grid of
-          icon+title+desc blocks on the right. No outer card frame — flat on the page. */}
-      <div className="hidden lg:grid lg:grid-cols-[577px_1fr] gap-4 lg:h-[600px]">
-        {/* Left tall image card. */}
-        <BentoCard className="h-full" noIcon isImageOnly imageBg={(item1?.media as Media)?.url || undefined} />
+    <section className="pb-28 lg:pb-32">
+      <div className="cs-wrap">
+        <div className="mb-14 max-w-[52ch] lg:mb-[70px]">
+          {heading ? (
+            <h2 className="cs-h2 mb-5">
+              <span data-cs="mask" className="cs-mask">
+                {heading}
+              </span>
+            </h2>
+          ) : null}
+          {description ? (
+            <div className="cs-body">
+              <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-inherit" />
+            </div>
+          ) : null}
+        </div>
 
-        {/* Right: 2x2 grid of benefit blocks. */}
-        <div className="grid grid-cols-2 grid-rows-2 gap-4">
-          <BentoCard
-            className="h-full"
-            icon={item1?.icon ?? undefined}
-            title={item1?.title || 'Genuine Connection'}
-            desc={
-              item1?.excerpt ||
-              'Build meaningful relationships with your colleagues. We foster a culture of collaboration and mutual support, where everyone feels like they belong.'
-            }
-          />
-          <BentoCard className="h-full" noIcon isImageOnly imageBg={(item2?.media as Media)?.url || undefined} />
-          <BentoCard
-            className="h-full"
-            icon={item3?.icon ?? undefined}
-            title={item3?.title || 'Ship agentic products'}
-            desc={
-              item3?.excerpt ||
-              'Work on products that have a real impact. We build tools that empower users to achieve more.'
-            }
-          />
-          <BentoCard
-            className="h-full"
-            icon={item4?.icon ?? undefined}
-            title={item4?.title || 'Move with velocity'}
-            desc={
-              item4?.excerpt ||
-              "We move fast and iterate quickly. You'll have the opportunity to see your work in the hands of users rapidly."
-            }
-          />
+        <div data-cs-group className="grid grid-cols-1 gap-8 md:grid-cols-3 lg:gap-6">
+          {(items ?? []).map((item, i) => (
+            <div key={item.id ?? i} data-cs-item className="cs-item border-t border-[rgba(242,240,234,0.14)] pt-7">
+              <span
+                aria-hidden
+                data-cs="cover"
+                className={`cs-cover cs-cover-${(i % 5) + 1} mb-6 block aspect-[16/9]`}
+              />
+              <span aria-hidden className="cs-meta">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              {item.title ? (
+                <h3 className="mt-5 mb-3 font-display text-[clamp(19px,1.7vw,25px)] font-medium tracking-[-0.015em]">
+                  {item.title}
+                </h3>
+              ) : null}
+              {item.excerpt ? <p className="cs-body text-[16px]">{item.excerpt}</p> : null}
+            </div>
+          ))}
         </div>
       </div>
-    </Section>
+    </section>
   )
 }

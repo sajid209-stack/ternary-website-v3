@@ -20,6 +20,34 @@ CMS later.
 
 ## Changes
 
+### Careers page — approved prototype copy (staging)
+`pages.careers.layout[*]` via `scripts/seed-careers-copy.js` (idempotent). **Prod follow-up: replicate.**
+
+Replaces the careers copy with the wording from the approved prototype: hero
+("Build once. / Answer for it always." + standfirst), the five "How we work" rows, the three
+"What you can expect" cards, the "Engineering growth" ladder (Associate / Engineer / Senior /
+Lead) and its three supporting cards, plus the section descriptions for Team voices and Open
+roles.
+
+**This is more than a wording refresh.** Every careers component previously carried `||`
+fallbacks for its strings — "More than just a workplace. A platform for impact.", "Genuine
+Connection" (twice over), "Structured leveling & clear progression" and others. Those defaults
+rendered as live page copy whenever a CMS field was empty: unapproved marketing text that appears
+nowhere in this changelog. The rebuilt components render nothing for an empty field, so this seed
+is what actually puts approved words on the page.
+
+Two things deliberately NOT seeded:
+- The prototype's three team quotes and "[ Engineer name ]" placeholders. Quotes now come from
+  each team member's own CMS `excerpt`; a member without one renders portrait, name and role and
+  no quote. Nothing is written on anyone's behalf.
+- The prototype's bracketed production note in the Team voices description.
+
+**bn is untouched.** The prototype is English only, and a machine translation is worse than a
+stale string. `/bn/careers` still shows the previous Bengali copy and needs a human pass.
+- Code (same pass): `[...slug]/page.tsx` cache key `_v6 → _v7`. The seed ran outside a Next
+  request so no afterChange hook fired to bust the `pages` tag.
+
+
 ### Stage 8 — solution detail pages populated (staging, 2026-07-30)
 `solution` collection ×4 via `scripts/seed-stage8.ts`. **Prod follow-up: replicate (schema deploy
 first — the `detail` group ships in code).** Each doc gained the full 7-section template content
