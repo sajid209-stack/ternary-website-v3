@@ -1,7 +1,15 @@
 # Production cutover runbook — ternary.solutions
 
 How to take the redesign + full CMS build-out live on **ternary.solutions**. Prepared 2026-08-01.
-Code is on PR **#52** (`redesign-v2-production-cutover` → `main` on `ishmamullhasan/ternary-website-v3`).
+Code is on PR **ternary-solutions/ternary-website-v3#128** (`redesign-v2-production-cutover` → `main`).
+
+> **Which branch deploys the live site?** This repo has both `main` and a diverged **`production`**
+> branch — `production` carries 2 commits `main` lacks (`#125`, `#127`) and vice-versa. Our work is
+> based cleanly on `main`. **Confirm which branch ternary.solutions actually builds from before the
+> final promote:**
+> - If it deploys from **`main`** → merge PR #128, deploy. Done.
+> - If it deploys from **`production`** → merge PR #128 to `main`, then reconcile `main` → `production`
+>   (rebase/merge, preserving `#125`/`#127`), and deploy `production`. Test the merge on a preview first.
 
 > **The golden fact:** going live is TWO independent things — **code** (merge the PR) and **content**
 > (seed the *production* database). The production CMS is a **separate database** from the yh16
@@ -12,8 +20,9 @@ Code is on PR **#52** (`redesign-v2-production-cutover` → `main` on `ishmamull
 
 ## Who can do this
 Whoever holds **production access** — the company MongoDB connection string, write access to the
-production deploy. Claude on this machine has the company *repo* access (the PR is proof) but does
-**NOT** have the production database string and cannot seed it. That step is yours / Shadman's.
+production deploy. Claude on this machine has write access to the production repo
+`ternary-solutions/ternary-website-v3` (PR #128 is proof) but does **NOT** have the production
+database string and cannot seed it. That step is yours / Shadman's.
 
 ## Prerequisites
 1. The **production** `DATABASE_URI` (self-hosted Mongo, host `54.254.242.76`, db `ternary`).
@@ -69,8 +78,9 @@ DATABASE_URI='<PROD>' SEED_DRY=0 pnpm payload run scripts/seed-remaining-hubs.ts
 > didn't, the write rolled back (check `disableTransaction`). Cross-check against `COPY_CHANGELOG.md`
 > that no PRODUCTION FOLLOW-UP was missed — that file is the source of truth for the content list.
 
-### Step 4 — Merge PR #52 → deploy the code
-Merge `redesign-v2-production-cutover` into `main`, let the production build run. The code already
+### Step 4 — Merge PR #128 → deploy the code
+Merge `redesign-v2-production-cutover` into `main` (then promote to `production` if that's the deploy
+branch — see the note at the top). Let the production build run. The code already
 version-bumps every `unstable_cache` key, so the fresh deploy reads the now-seeded data (no stale
 cache). If production exposes `/next/revalidate?secret=<CRON_SECRET>`, hit it after deploy as a belt.
 
