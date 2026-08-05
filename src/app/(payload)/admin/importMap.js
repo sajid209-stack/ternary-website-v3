@@ -41,6 +41,7 @@ import { FolderTypeField as FolderTypeField_2b8867833a34864a02ddf429b0728a40 } f
 import { default as default_3e7886a116337b3a5fdbc61dfa4c0736 } from '@/globals/nav/MenuRowLabel'
 import { default as default_a35892fd500c25c622a716700e86fb8b } from '@/components/admin/revalidate/RevalidatorPanel'
 import { default as default_2685ea8f1aa22104459403fbb71f1f98 } from '@/components/admin/revalidate/NoSaveButton'
+import { SignInButton as SignInButton_06d0cb594d8f6ba2ac35015f930c882e } from 'payload-authjs/components'
 import { default as default_38a60579efdcf4006ff5a0cf0ab3e698 } from '@/components/admin/revalidate/CacheRevalidator'
 import { default as default_d8816c4bca290ed5b5596bb3533c3751 } from '@/components/admin/AnalyticsDashboard'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
@@ -91,6 +92,7 @@ export const importMap = {
   "@/globals/nav/MenuRowLabel#default": default_3e7886a116337b3a5fdbc61dfa4c0736,
   "@/components/admin/revalidate/RevalidatorPanel#default": default_a35892fd500c25c622a716700e86fb8b,
   "@/components/admin/revalidate/NoSaveButton#default": default_2685ea8f1aa22104459403fbb71f1f98,
+  "payload-authjs/components#SignInButton": SignInButton_06d0cb594d8f6ba2ac35015f930c882e,
   "@/components/admin/revalidate/CacheRevalidator#default": default_38a60579efdcf4006ff5a0cf0ab3e698,
   "@/components/admin/AnalyticsDashboard#default": default_d8816c4bca290ed5b5596bb3533c3751,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
