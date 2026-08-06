@@ -131,7 +131,19 @@ function paintHeading(heading: HTMLElement, width: number, height: number, dpr: 
   }
 
   const text = (heading.innerText || heading.textContent || '').trim()
-  const lines = wrapLines(ctx, text, width)
+
+  // The DOM's line count is authoritative — the heading's box was sized by the browser's own
+  // line-breaking. Our canvas re-wrap (ctx.measureText) can disagree by a sub-pixel at a wrap
+  // boundary and split into MORE lines than the box holds; the vertical-centre math below would
+  // then push `blockTop` negative and paint glyphs above the box, bleeding into the heading above
+  // (visible as overlapping title lines at certain widths/zoom). Widen the wrap budget until the
+  // canvas matches the DOM's line count so that can never happen.
+  const targetLines = Math.max(1, Math.round(height / lineHeight))
+  let lines = wrapLines(ctx, text, width)
+  for (let budget = width; lines.length > targetLines && budget < width * 1.5; budget += 2) {
+    lines = wrapLines(ctx, text, budget)
+  }
+
   const cx = width / 2
   const blockTop = (height - lines.length * lineHeight) / 2 + lineHeight / 2
   lines.forEach((line, i) => ctx.fillText(line, cx, blockTop + i * lineHeight))

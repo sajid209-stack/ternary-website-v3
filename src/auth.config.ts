@@ -29,6 +29,11 @@ const ALLOWED_EMAILS = (process.env.AUTH_ALLOWED_EMAILS ?? '')
 const googleConfigured = Boolean(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET)
 
 export const authConfig: NextAuthConfig = {
+  // Auth.js v5 requires a signing secret and normally auto-reads AUTH_SECRET. It is not otherwise
+  // set in this project (Payload runs off PAYLOAD_SECRET), so without this every /admin request
+  // throws `MissingSecret` and the admin login is dead. Prefer an explicit AUTH_SECRET when present,
+  // else reuse PAYLOAD_SECRET — always defined, since Payload can't boot without it.
+  secret: process.env.AUTH_SECRET || process.env.PAYLOAD_SECRET,
   providers: googleConfigured
     ? [
         Google({
